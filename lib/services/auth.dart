@@ -1,4 +1,5 @@
 import 'package:felix_cafe/models/user.dart' as app_model; // Avoid naming conflict
+import 'package:felix_cafe/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -27,11 +28,23 @@ class AuthService {
   }
 
   // TODO: sign in with email & password
+  Future SignInWithEmailAndPassword(String email, String password) async{
+    try {
+      UserCredential result =await _auth.signInWithEmailAndPassword(email: email, password: password);
+      User? user = result.user;
+      return _userFromFirebaseUser(user);
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }  
   // TODO: register with email & password
   Future RegisterWithEmailAndPassword(String email, String password) async{
     try {
       UserCredential result =await _auth.createUserWithEmailAndPassword(email: email, password: password);
       User? user = result.user;
+      //create a doc from uid
+      await DatabaseService(uid:user!.uid).updateUserData('0','new member',100);
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());

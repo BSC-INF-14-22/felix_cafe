@@ -1,10 +1,12 @@
 import 'package:felix_cafe/services/auth.dart';
+import 'package:felix_cafe/shared/constant.dart';
+import 'package:felix_cafe/shared/loading.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
 
   final Function toggleView;
-  SignIn({required this.toggleView});
+  const SignIn({super.key, required this.toggleView});
 
   @override
   State<SignIn> createState() => _SignInState();
@@ -12,12 +14,15 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
+   final _formkey = GlobalKey<FormState>();
+   bool loading = false;
   //text fields
   String email='';
   String password='';
+  String error='';
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading?Loading(): Scaffold(
       backgroundColor: Colors.brown[100],
       appBar: AppBar(
         backgroundColor: Colors.brown[400],
@@ -45,16 +50,21 @@ class _SignInState extends State<SignIn> {
       body: Container(
         padding: EdgeInsets.symmetric(horizontal:50, vertical: 20 ),
         child: Form(
+          key: _formkey,
           child: Column(
             children: [
               SizedBox(height: 20.0,),
               TextFormField(
+                decoration: textInputDecoration.copyWith(hintText: 'Email'),
+                validator: (value)=>value==null || value.isEmpty?'Enter an email':null,                
                 onChanged: (value) {
                 setState(()=>email = value);  
                 },
               ),
               SizedBox(height: 20.0,),
               TextFormField(
+                decoration: textInputDecoration.copyWith(hintText: 'Password'),
+                validator: (value)=>value==null || value.length < 6?'Enter a password with more than 6 characters':null,                
                 obscureText: true,
                 onChanged: (value) {
                   setState(()=>password = value);
@@ -62,9 +72,18 @@ class _SignInState extends State<SignIn> {
               ),
               SizedBox(height: 20,),
               ElevatedButton(
-                onPressed: (){
-                  print(email);
-                  print(password);
+                onPressed: () async{
+                  if(_formkey.currentState!.validate()){
+                    setState(()=>loading = true);
+                    dynamic result = await _auth.SignInWithEmailAndPassword(email,password);
+                    if(result==null){
+                    setState(() {
+                      error = 'Credentials Invalid';
+                      loading = false;
+                      }
+                      );
+                  }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.pink[300],
@@ -77,6 +96,13 @@ class _SignInState extends State<SignIn> {
                   color: Colors.black,
                 ),),
                 ),
+                                SizedBox(height: 10.0,),
+                Text(error,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 14.0,
+                ),
+                )
             ],
           ))
       ),

@@ -1,11 +1,12 @@
+import 'package:felix_cafe/shared/constant.dart';
+import 'package:felix_cafe/shared/loading.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:felix_cafe/services/auth.dart';
 
 class Register extends StatefulWidget {
   
   final Function toggleView;
-  Register({required this.toggleView});
+  const Register({super.key, required this.toggleView});
 
   @override
   State<Register> createState() => _RegisterState();
@@ -14,13 +15,14 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _formkey = GlobalKey<FormState>();
   final AuthService _auth = AuthService();
+  bool loading = false;
   //text fields
   String email='';
   String password='';
   String error='';
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading? Loading(): Scaffold(
       backgroundColor: Colors.brown[100],
       appBar: AppBar(
         backgroundColor: Colors.brown[400],
@@ -53,6 +55,7 @@ class _RegisterState extends State<Register> {
             children: [
               SizedBox(height: 20.0,),
               TextFormField(
+                decoration: textInputDecoration.copyWith(hintText: 'Email'),
                 validator: (value)=>value==null || value.isEmpty?'Enter an email':null,
                 onChanged: (value) {
                 setState(()=>email = value);  
@@ -60,6 +63,7 @@ class _RegisterState extends State<Register> {
               ),
               SizedBox(height: 20.0,),
               TextFormField(
+              decoration: textInputDecoration.copyWith(hintText: 'password'),
                 validator: (value)=>value==null || value.length < 6?'Enter password with more than 6 characters':null,
                  obscureText: true,
                 onChanged: (value) {
@@ -70,9 +74,14 @@ class _RegisterState extends State<Register> {
               ElevatedButton(
                 onPressed: () async {
                   if(_formkey.currentState!.validate()){
+                    setState(()=>loading=true);
                   dynamic result = await _auth.RegisterWithEmailAndPassword(email,password);
                   if(result==null){
-                    setState(()=> error = 'please supply a valid email or password');
+                    setState((){ 
+                      error = 'please supply a valid email or password';
+                      loading=false;
+                    }
+                    );
                   }
                   }
                 },
@@ -87,7 +96,7 @@ class _RegisterState extends State<Register> {
                   color: Colors.black,
                 ),),
                 ),
-                SizedBox(height: 0.0,),
+                SizedBox(height: 10.0,),
                 Text(error,
                 style: TextStyle(
                   color: Colors.red,
