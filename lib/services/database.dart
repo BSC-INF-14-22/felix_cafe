@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:felix_cafe/models/brew.dart';
+import 'package:felix_cafe/models/user.dart';
 
 class DatabaseService {
   final String? uid;
@@ -28,8 +29,24 @@ class DatabaseService {
     }).toList();
   }
 
+  // user data from snapshot
+  UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
+    return UserData(
+      uid: uid!,
+      name: data['name'] ?? '',
+      sugars: data['sugars'] ?? '0',
+      strength: data['strength'] ?? 0,
+    );
+  }
+
   // get brews stream
   Stream<List<Brew>> get brews {
     return brewCollection.snapshots().map(_brewListFromSnapshot);
+  }
+
+  // get user doc stream
+  Stream<UserData> get userData {
+    return brewCollection.doc(uid).snapshots().map(_userDataFromSnapshot);
   }
 }

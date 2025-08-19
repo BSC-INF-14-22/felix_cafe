@@ -48,6 +48,12 @@ class _SignInState extends State<SignIn> {
         ],
       ) ,
       body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/sign in.webp"),
+              fit: BoxFit.cover,
+              )
+          ),        
         padding: EdgeInsets.symmetric(horizontal:50, vertical: 20 ),
         child: Form(
           key: _formkey,
@@ -55,7 +61,12 @@ class _SignInState extends State<SignIn> {
             children: [
               SizedBox(height: 20.0,),
               TextFormField(
-                decoration: textInputDecoration.copyWith(hintText: 'Email'),
+                decoration: textInputDecoration.copyWith(hintText: 'Email',
+                errorStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red[500]
+                )
+                ),
                 validator: (value)=>value==null || value.isEmpty?'Enter an email':null,                
                 onChanged: (value) {
                 setState(()=>email = value);  
@@ -63,7 +74,13 @@ class _SignInState extends State<SignIn> {
               ),
               SizedBox(height: 20.0,),
               TextFormField(
-                decoration: textInputDecoration.copyWith(hintText: 'Password'),
+                decoration: textInputDecoration.copyWith(hintText: 'Password',
+                errorStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15.0,
+                  color: Colors.red[500]
+                )
+                ),
                 validator: (value)=>value==null || value.length < 6?'Enter a password with more than 6 characters':null,                
                 obscureText: true,
                 onChanged: (value) {
@@ -99,8 +116,9 @@ class _SignInState extends State<SignIn> {
                                 SizedBox(height: 10.0,),
                 Text(error,
                 style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 14.0,
+                  color: Colors.red[500],
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
                 ),
                 )
             ],

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class BrewTile extends StatelessWidget {
 final Brew brew;
-BrewTile({required this.brew});
+const BrewTile({super.key, required this.brew});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +15,7 @@ BrewTile({required this.brew});
           leading: CircleAvatar(
             radius: 25.0,
             backgroundColor: Colors.brown[brew.strength],
+            backgroundImage: AssetImage('assets/coffee_icon.png'),
           ),
           title: Text(brew.name),
           subtitle: Text('Takes ${brew.sugar} sugars'),
